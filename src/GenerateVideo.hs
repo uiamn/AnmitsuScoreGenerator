@@ -52,12 +52,13 @@ generateVideo :: Score -> IO()
 generateVideo score = do
     let timeBasedObjects = objectToTimeBased (bpm (header score)) (objects score)
 
-    let scene = generateScene timeBasedObjects 1510
+    -- let scene = generateScene timeBasedObjects 1510
 
     let window = InWindow "Hello World" (640, videoHeight) (0, 0)
 
-    display window black (translate (-320) (-240) scene)
+    -- display window black (translate (-320) (-240) scene)
 
+    animate window black (\t -> generateScene timeBasedObjects (floor (t * 60.0)))
 
 
 drawLane :: [Picture]
@@ -75,7 +76,7 @@ generateScene objects flame = do
             (laneOffset + fromIntegral (laneWidth*8), fromIntegral judgeLinePosition)
             ]
 
-    Pictures $ map (drawNoteObject time) visibleNotes ++ (judgeLine : lane)
+    translate (-320) (-240) $ Pictures $ map (drawNoteObject time) visibleNotes ++ (judgeLine : lane)
 
 
 drawNoteObject :: Double -> ObjectBasedTime -> Picture
