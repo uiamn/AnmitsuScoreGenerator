@@ -1,19 +1,14 @@
 module Types where
 
-data Fraction = Fraction Int Int
+import Data.Ratio
+
 data WavDef = WavDef Int String
 
 data Object = Object {
     bar_ :: Int,
-    position :: Fraction,
+    position :: Rational,
     channel :: Int,
     index :: String
-}
-
-data Eden = Eden {
-    bar :: Int,
-    bpm :: Double,
-    objects :: [Object]
 }
 
 data Header = Header {
@@ -23,6 +18,6 @@ data Header = Header {
 
 data Score = Score {
     header :: Header,
-    score :: [Eden],
+    objects :: [Object],
     wavDef :: [WavDef]
 }

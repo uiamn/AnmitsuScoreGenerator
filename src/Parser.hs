@@ -5,6 +5,7 @@ import Types
 import Data.Char
 import Data.List
 import Data.List.Split
+import Data.Ratio
 
 import Numeric
 
@@ -44,11 +45,11 @@ lineToObjects str = do
     let bar = read (take 3 $ tail str) :: Int
     let channel = hexToDec $ take 2 $ drop 4 str
     let objects = stepSplit 2 $ drop 7 str
-    let denom = length objects
+    let denom = fromIntegral(length objects) :: Integer
 
     map (\(position, id_) -> Object {
         bar_ = bar,
-        position = Fraction position denom,
+        position = position % denom,
         channel = channel,
         index = id_
     }) $ filter (\(_, id_) -> id_ /= "00") $ zip [0..] objects
