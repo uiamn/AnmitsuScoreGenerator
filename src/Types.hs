@@ -2,7 +2,9 @@ module Types where
 
 import Data.Ratio
 
-data WavDef = WavDef Int String
+data Definition = Definition String String
+
+data JudgeLevel = VeryHard | Hard | Normal | Easy deriving (Show, Enum)
 
 data Object = Object {
     bar_ :: Int,
@@ -13,11 +15,14 @@ data Object = Object {
 
 data Header = Header {
     title :: String,
-    artist :: String
-}
+    -- artist :: String
+    bpm :: Double,
+    total :: Double,
+    judgeLevel :: JudgeLevel
+} deriving (Show)
 
 data Score = Score {
     header :: Header,
     objects :: [Object],
-    wavDef :: [WavDef]
+    wavDef :: [Definition]
 }

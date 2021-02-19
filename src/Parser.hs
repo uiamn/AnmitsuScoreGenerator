@@ -24,27 +24,36 @@ countNotes :: [Object] -> Int
 countNotes objects = length $ filter isNote objects
 
 
-parse :: FilePath -> IO ()
+parse :: FilePath -> IO Score
 parse path = do
-    mainData <- preMainDataParse path
+    rawFile <- readFile path -- ファイルを読み出す
+    let lines = map removeCR $ splitOn "\n" rawFile -- 行毎に区切る
+    let mainDataLines = filter (\x -> ("#" `isPrefixOf` x) && isNumber (x !! 1)) lines -- メインデータが格納されている行
 
-    print $ countNotes mainData
+    return Score {
+        header = parseHeader lines,
+        objects = concatMap lineToObjects mainDataLines,
+        wavDef = parseDefinition "WAV" lines
+    }
 
 
-preMainDataParse :: FilePath -> IO [Object]
-preMainDataParse path = do
-    row_file <- readFile path
-    let f = removeCR row_file
-    let mainDataLines = toMainDataLines f
+parseHeader :: [String] -> Header
+parseHeader lines = Header {
+    title = drop 7 $ head $ filter (isPrefixOf "#TITLE") lines,
+    bpm = read (drop 5 $ head $ filter (isPrefixOf "#BPM") lines) :: Double,
+    total = read (drop 7 $ head $ filter (isPrefixOf "#TOTAL") lines) :: Double,
+    judgeLevel = toEnum (read (drop 6 $ head $ filter (isPrefixOf "#RANK") lines) :: Int) :: JudgeLevel
+}
 
-    return $ concatMap lineToObjects mainDataLines
+parseDefinition :: String -> [String]  -> [Definition]
+parseDefinition prefix lines = map ((\x -> Definition (head x) (last x)) . splitOn " " . drop (length prefix + 1)) $ filter (isPrefixOf ("#" ++ prefix)) lines
 
 
 lineToObjects :: String -> [Object]
-lineToObjects str = do
-    let bar = read (take 3 $ tail str) :: Int
-    let channel = hexToDec $ take 2 $ drop 4 str
-    let objects = stepSplit 2 $ drop 7 str
+lineToObjects line = do
+    let bar = read (take 3 $ tail line) :: Int
+    let channel = hexToDec $ take 2 $ drop 4 line
+    let objects = stepSplit 2 $ drop 7 line
     let denom = fromIntegral(length objects) :: Integer
 
     map (\(position, id_) -> Object {
@@ -60,11 +69,6 @@ stepSplit step str
     | length str <= step = [str]
     | otherwise = take step str : stepSplit step (drop step str)
 
-
-toMainDataLines :: String -> [String]
-toMainDataLines str = filter isMainDataLine $ map removeCR $ splitOn "\n" str
-
-
 removeCR :: String -> String
 removeCR str = do
     case length str of
@@ -72,7 +76,3 @@ removeCR str = do
         _ -> case last str of
             '\r' -> take (length str - 1) str
             _ -> str
-
-
-isMainDataLine :: String -> Bool
-isMainDataLine str = ("#" `isPrefixOf` str) && isNumber (str !! 1)
