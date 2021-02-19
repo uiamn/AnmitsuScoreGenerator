@@ -7,7 +7,7 @@ data Definition = Definition String String
 data JudgeLevel = VeryHard | Hard | Normal | Easy deriving (Show, Enum)
 
 data Object = Object {
-    bar_ :: Int,
+    bar :: Int,
     position :: Rational,
     channel :: Int,
     index :: String

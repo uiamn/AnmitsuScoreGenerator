@@ -12,18 +12,6 @@ import Numeric
 hexToDec :: String -> Int
 hexToDec str = fst $ head $ readHex str
 
-
-isNote :: Object -> Bool
-isNote obj
-    | channel obj <= hexToDec "10" = False
-    | channel obj == hexToDec "17" = False
-    | channel obj >= hexToDec "1A" = False
-    | otherwise = True
-
-countNotes :: [Object] -> Int
-countNotes objects = length $ filter isNote objects
-
-
 parse :: FilePath -> IO Score
 parse path = do
     rawFile <- readFile path -- ファイルを読み出す
@@ -57,7 +45,7 @@ lineToObjects line = do
     let denom = fromIntegral(length objects) :: Integer
 
     map (\(position, id_) -> Object {
-        bar_ = bar,
+        bar = bar,
         position = position % denom,
         channel = channel,
         index = id_
