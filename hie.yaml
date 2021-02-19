@@ -1,0 +1,13 @@
+cradle:
+  stack:
+    - path: "./src"
+      component: "anmitsu:lib"
+
+    - path: "./app/Main.hs"
+      component: "anmitsu:exe:anmitsu-exe"
+
+    - path: "./app/Paths_anmitsu.hs"
+      component: "anmitsu:exe:anmitsu-exe"
+
+    - path: "./test"
+      component: "anmitsu:test:anmitsu-test"
